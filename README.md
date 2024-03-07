@@ -2,8 +2,8 @@
 
 This is an adaptation from the [original Flightmare](https://github.com/uzh-rpg/flightmare) developed by the RPG. 
 
-This publication only uses a small part of the provided frame work, but to ensure reproducability, the whole stack is uploaded here.
-Note that this code enables the real world experiments on the Avian Informed Drone LisEagle and does not provide a simulation frame work.
+This publication only uses a small part of the provided framework, but to ensure reproducibility, we upload the whole stack.
+Note that this code enables real-world experiments on the Avian Informed Drone LisEagle and does not provide a simulation framework.
 
 The files of interest are:
 
@@ -13,12 +13,12 @@ in **flightpy**
 - run_bo.py (runs Bayesian Optimization)
 
 in **flightlib**
-- liseagle_dynamics.hpp, liseagle_dynamics.cpp (dynamics model of the avian informed drone LisEagle)
+- liseagle_dynamics.hpp, liseagle_dynamics.cpp (dynamics model of the avian-informed drone LisEagle)
 - motor.hpp, motor.cpp (motor model)
 - servo.hpp, servo.cpp (servo model)
 
 in **controller**
-- high_level_pid (high level PID controller that takes in position and gives out thrust and body rates)
+- high_level_pid (high-level PID controller that takes in position and gives out thrust and body rates)
 
 ## License
 
@@ -28,7 +28,7 @@ This project is released under the MIT License. Please review the [License file]
 
 ## Get Compilers
 
-Flightmare requires CMake and GCC compiler.
+Flightmare requires CMake and GCC compilers.
 
 ```
 sudo apt-get update && sudo apt-get install -y --no-install-recommends \
