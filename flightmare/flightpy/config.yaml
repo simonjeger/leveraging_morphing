@@ -1,0 +1,167 @@
+# RELEVANT FOR THE EXPERIMENT
+wind:
+  mag_min: 8.0 # [m/s] min. magnitude of wind, choosen at start of episode (for testing choose = mag_max)
+  mag_max: 8.0 # [m/s] max. magnitude of wind, choosen at start of episode (for testing choose = mag_min)
+  dir: [-1, 0, 0] # if "random", random direction for every episode. If "front", like random but from the front (neg. x direction). If vector e.g. [0.0, 1.0, 0.0], direction in x,y,z dimension (will be normalized to unit vector)
+
+experiment: # for stable hovering only
+  energy: False # bayesian optimization for energy of different actuator positions during stable flight
+
+# NOT RELEVANT FOR THE EXPERIMENT
+environment:
+  world_box: [-1, -1, 0, 1, 1, 2] # [m] Bounding box applied during training, exiting this box terminates the episode. [xmin, ymin, zmin, xmax, ymax, zmax]
+
+unity:
+  scene_id: 3 # 0 industrial, 1 mountain, 2 side_pinkroom, 3 top_pinkroom, 4 iso_pinkroom
+  render: no
+
+simulation:
+  seed: 1 # seed for random number generator
+  ctr_dt: 0.02 # [s] control loop time step
+  integrator: rk4 # euler, rk4
+  max_t: 10000.0 # [s] max. duration of an episode, after the episode is terminated
+  num_envs: 1 # number of parallel environments during training
+  num_threads: 10 # number of threads used during training, set to number of cores of your computer
+
+robot:
+  type: liseagle #quadrotor, bixler, mpextra330, mpextra330ml, liseagle
+  ll_controller: custom #simple, custom
+  rotor_ctrl: 1 # 0 raw, 1 body rate (only available for quadrotor & liseagle)
+  fit_model: false # if coefficients should be adapted to data found in previous experiments (run fit_model.py first)
+
+observation: # observation space for RL
+  traj_obs_n: 1 # the number of goals (>0) that are put into the observation space at the same time
+  ori: true # if orientation is part of the observation space
+  lin_vel: true # if linear velocity is part of the observation space
+  ang_vel: true # if angular velocity is part of the observation space
+  lin_acc: false # if linear acceleration is part of the observation space
+  ang_acc: false # if angular acceleration is part of the observation space
+  actuator: false # if actuator position is part of the observation space
+  wind: false # if wind ground truth is part of the observation space
+  curl: false # if curl ground truth is part of the observation space
+  wind_est: false # if wind estimate is part of the observation space
+  curl_est: false # if curl estimate is part of the observation space
+  airspeed: false # if airspeed measurement is part of the observation space
+
+actuator: # enable / disable actuators (1st column: liseagle, 2nd column: standard fixedwing, 3rd column: quadrotor)
+  0: true # thr / thr / motor0
+  1: true # ele / ail / motor1
+  2: true # rud / ele / motor2
+  3: true # tswe / rud / motor3
+  4: true # lswe
+  5: true # rswe
+  6: true # ltwi
+  7: true # rtwi
+
+training: # RL training, currently PPO
+  total_timesteps: 2e+8
+  log_int_terminal: 10 # interval of displayed message in terminal
+  log_int_test: 100 # interval of saving weights and testing them
+  param_var: 0.0 # variance of parameters on the drones physics model
+
+testing:
+  num_rollouts: 1 # how many rollouts when testing
+
+turbulence:
+  on: false # if turbulence is added on top of wind
+  curl: false # if curl is added to turbulence
+  var: 0.0 # if turbulence not on, variance of norm. distr. is added on top of wind instead, choosen at every timestep. In this setting, no curl is added.
+  W_20: 15 # (light: 15, moderate: 30, severe: 45) wind speed at 20 ft above ground in knots
+  res: 0.1 # [m] resolution of turbulence field in wavelength space
+  curl_dist: 1.0 # [m] distance used for curl calculation
+  N_maps: 10 # number of maps to be generated
+  scaling: 0.1
+
+rewards: # RL reward function
+  pos_coeff: 0.0 # reward coefficient for distance to target (applied logarithmically)
+  ori_coeff: 0.0 # reward coefficient for orientation
+  yaw_coeff: 0.0 # reward coefficient for just yaw
+  lin_vel_coeff: 0.0 # reward coefficient for linear velocity
+  ang_vel_coeff: 0.0 # reward coefficient for angular velocity
+  lin_acc_coeff: 0.0 # reward coefficient for linear acceleration
+  ang_acc_coeff: 0.0 # reward coefficient for angular acceleration
+  pro_coeff: 0.0 # reward coefficient for progress (only in use when following trajectories)
+  done_coeff: 0.0 # rewarded once the final point of a trajectory is reached (therefore should only be used when following trajectories)
+  action_coeff: 0.0 # non zero actuator positions are punished
+  energy_coeff: 0.0 # using energy (changing servo-position, turning motor) is punished
+
+  names: [pos_penalty, ori_penalty, yaw_penalty, lin_vel_penalty,
+    ang_vel_penalty, lin_acc_penalty, ang_acc_penalty, pro_reward, done_reward, action_penalty,
+    energy_penalty, total]
+
+start_state:
+  pos: [0.0, 0.0, 1] #[m] initial position in world frame
+  rot: [0.995, 0.0, -0.1, 0.0]  #[rad] initial rotation in world frame (quaternion)
+  vel: [0.0, 0.0, 0.0] #[m/s] initial velocity in body frame
+  omega: [0.0, 0.0, 0.0] #[rad/s] initial angular velocity in body frame
+  pos_var: 1.0 # variance on position
+  rot_var: 0.1 # variance on rotation
+  vel_var: 1.0 # variance on velocity
+  omega_var: 0.1 # variance on angular velocity
+
+start_actuator: #initial position of actuators. If None, center position is used
+  actu_0: None #initial state of actu_0 (thrust in N)
+  actu_1: None #initial state of actu_1 (servo position in deg)
+  actu_2: None #initial state of actu_2 (servo position in deg)
+  actu_3: None #initial state of actu_3 (servo position in deg)
+  actu_4: None #initial state of actu_4 (servo position in deg)
+  actu_5: None #initial state of actu_5 (servo position in deg)
+  actu_6: None #initial state of actu_6 (servo position in deg)
+  actu_7: None #initial state of actu_7 (servo position in deg)
+
+goal_state:
+  acc_r: 0.3 # [m] the acceptance radius for a goal_pos to count as reached and the next will be loaded
+  # eigther the trajectory we are using is fixed. It can consist on a single point:
+  trajectory: [0, 0, 1]
+  # or it can be a series of points:
+  # trajectory: [0, 0, 1.0, 
+  #               2, 0, 1.0, 
+  #               4, 0, 1.0]
+  # or it's not specified. In that case it will be generated randomly. With traj_n points within a volume of size traj_size_x * traj_size_y * traj_size_z, centered around the start_position:
+  # trajectory: None
+  traj_n_min: 1
+  traj_n_max: 6
+  traj_size_x: 10 # [m]
+  traj_size_y: 8 # [m]
+  traj_size_z: 6 # [m]
+
+state_estimation: # observation noise
+  pos_std: 0.0 # variance on position measurement
+  vel_std: 0.0 # variance on velocity measurement
+  acc_std: 0.0 # variance on linear acceleration measurement
+  att_std: 0.0 # variance on attitude measurement
+  omega_std: 0.0 # variance on ang. velocity measurement
+  aac_std: 0.0 # variance on ang. acceleration measurement
+
+rgb_camera: # currently not in use
+  on: yes
+  t_BC: [0.0, 0.0, -0.3] # translational vector of the camera with repect to the body frame
+  r_BC: [0.0, 0.0, 0.0] # rotational angle (roll, pitch, yaw) of the camera in degree.
+  channels: 3
+  width: 720
+  height: 480
+  fov: 70.0
+  enable_depth: no
+  enable_segmentation: no
+  enable_opticalflow: no
+
+imu: # currently not in use
+  on: yes
+  t_BC: [0.0, 0.0, 0.0] # translational vector of the imu with repect to the body frame
+  r_BC: [0.0, 0.0, 0.0] # rotational angle (roll, pitch, yaw) of the imu in degree.
+  use_default_noise_params: true
+  noise_params:
+    gyroscope_noise_density: 0.0
+    gyroscope_random_walk: 0.0
+    gyroscope_bias_correlation_time: 0.0
+    gyroscope_turn_on_bias_sigma: 0.0
+    accelerometer_noise_density: 0.0
+    accelerometer_random_walk: 0.0
+    accelerometer_bias_correlation_time: 0.0
+    accelerometer_turn_on_bias_sigma: 0.0
+    gravity_magnitude: 0.0
+
+airspeed: # currently not in use
+  on: yes
+  offset_std: 0.1
+  noise_std: 0.3
