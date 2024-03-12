@@ -12,7 +12,7 @@ from mavros_msgs.msg import ActuatorControl
 from sensor_msgs.msg import Imu, BatteryState
 from geometry_msgs.msg import PoseStamped, TwistStamped
 from flightros_msgs.msg import State, StampedFloatArray
-from controller.NDoF_pid import HighLevelPID
+from controller.high_level_pid import HighLevelPID
 
 import rospy
 from std_msgs.msg import Bool

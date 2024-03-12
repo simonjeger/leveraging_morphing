@@ -17,8 +17,8 @@ in **flightlib**
 - motor.hpp, motor.cpp (motor model)
 - servo.hpp, servo.cpp (servo model)
 
-in **controller**
-- high_level_pid (high-level PID controller that takes in position and gives out thrust and body rates)
+in **flightpy/controller**
+- high_level_pid.py (high-level PID controller that takes in position and gives out thrust and body rates)
 
 ## License
 
